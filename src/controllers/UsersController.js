@@ -1,6 +1,7 @@
 const knex = require('../database/knex');
 const bcrypt = require('bcryptjs');
 const AppError = require('../utils/AppError');
+const userService = require('../services/UserService');
 
 class UsersController {
     async create(req, res) {
@@ -15,16 +16,10 @@ class UsersController {
             throw new AppError('Usuário já cadastrado');
         }
 
-        const isAdmin = false
-
         const hashedPassword = await bcrypt.hash(password, 8);
 
-        await knex('users').insert({
-            name,
-            email,
-            password: hashedPassword,
-            isAdmin
-        })
+        await userService.createUser(name, email, hashedPassword);
+
         return res.status(201).json('Usuário criado com sucesso');
     }
 
