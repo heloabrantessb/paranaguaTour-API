@@ -7,15 +7,15 @@ const pointsRoutes = Router()
 
 const pointsControllers = new PointsControllers()
 
-pointsRoutes.get('/', pointsControllers.listPoints);
-pointsRoutes.get('/:id', pointsControllers.listPointsById);
+pointsRoutes.get('/', pointsControllers.list);
+pointsRoutes.get('/:id', pointsControllers.findById);
 
 pointsRoutes.use(ensureAuthenticated)
 pointsRoutes.use(checkIsAdmin)
 
-pointsRoutes.post('/', pointsControllers.createPoints);
-pointsRoutes.delete('/:id', pointsControllers.deletePoints);
-pointsRoutes.put('/:id', pointsControllers.updatePoints);
+pointsRoutes.post('/', pointsControllers.create);
+pointsRoutes.delete('/:id', pointsControllers.delete);
+pointsRoutes.put('/:id', pointsControllers.update);
 
 module.exports = pointsRoutes
 

@@ -1,47 +1,57 @@
 const knex = require('../database/knex')
+const BaseController = require('./BaseController')
+const {createPoint, listPoints, findPointById, updatePoint, deletePoint} = require('../services/PointService')
 
-class PointsController {
-    async createPoints(req, res) {
-        const {name, description, location, category} = req.body
+class PointsController extends BaseController{
+    create = async (req, res) => {
+        try {
+            const {name, description, location, category} = req.body
 
-        // const media = await knex('comments').where({points_id: })
+        await createPoint(name, description, location, category)
 
-        const pointId = await knex('points').insert({
-            name,
-            description,
-            location,
-            category,
-        })
-        console.log(pointId)
-
-        return res.status(201).json('Ponto criado com sucesso')
+            return this.created(res)
+        } catch (error) {
+            return this.badRequest(res, error.message)
+        }
     }
-    async listPoints(req, res) {
-        const points = await knex('points');
-        return res.status(200).json(points)
-    }
-    async listPointsById(req, res) {
-        const {id} = req.params
-        const points = await knex('points').where({id})
-        return res.status(200).json(points)
-    }
-    async deletePoints(req, res) {
-        const {id} = req.params;
-        await knex('points').where({id}).delete()
 
-        return res.status(200).json('sucess')
+    list = async (req, res) => {
+        try {
+            const points = await listPoints()
+            return this.ok(res, points)
+        } catch (error) {
+            return this.badRequest(res, error.message)
+        }
     }
-    async updatePoints(req, res) {
-        const {id} = req.params
-        const {name, description, location, category} = req.body
+    findById = async (req, res) => {
+        try {
+            const {id} = req.params
+            const point = await findPointById(id)
+            return this.ok(res, point)
+        } catch (error) {
+            return this.badRequest(res, error.message)
+        }
+    }
+    delete = async (req, res) => {
+        try {
+            const {id} = req.params;
+            await deletePoint(id);  
 
-        await knex('points').where({id}).update({
-            name,
-            description,
-            location,
-            category
-        })
-        return res.status(200).json('Ponto atualizado com sucesso')
+            return this.ok(res, 'Ponto deletado com sucesso')
+        } catch (error) {
+            return this.badRequest(res, error.message)
+        }   
+    }
+    update = async (req, res) => {
+        try {
+            const {id} = req.params
+            const {name, description, location, category} = req.body
+
+            await updatePoint(id, name, description, location, category)
+            return this.ok(res, 'Ponto atualizado com sucesso')
+        } catch (error) {
+            return this.badRequest(res, error.message)
+        }   
     }
 }
 module.exports = PointsController

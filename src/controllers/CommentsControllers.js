@@ -1,19 +1,14 @@
 const knex = require('../database/knex')
+const { createComment, listComments, getCommentsByPostId, deleteComment } = require('../services/CommentService')
 const updateRating = require('../utils/updateRating')
 
 class CommentsControllers {
-    async create(req, res) {
+    create = async (req, res) => {
     const {title, comment, rating} = req.body
     const {points_id} = req.params
     const {id} = req.user
     
-    await knex('comments').insert({
-        title,
-        comment,
-        user_id: id,
-        points_id,
-        rating   
-    })
+    await createComment(points_id, title, comment, rating, id)
 
     const averageRating = await updateRating(points_id)
 
@@ -21,33 +16,33 @@ class CommentsControllers {
         mediaRating: averageRating
     });
     
-    return res.status(201).json('comentario criado com sucesso')
+    return this.ok(res, 'Comentário criado com sucesso')
     }
-    async listComments(req, res) {
-        const comments = await knex('comments');
-        return res.status(200).json(comments);
+
+    list = async (req, res) => {
+        const comments = await listComments 
+        return this.ok(res, comments)
     }
-    async listCommentsById(req, res) {
+
+    getByPostId = async (req, res) => {
         const {id} = req.params
-        const comments = await knex('comments').where({points_id: id})
-        return res.status(200).json(comments)
+        const comments = await this.getCommentsByPostId(id)
+        return this.ok(res, comments)
     }
-    async deleteComment(req, res) {
+
+    delete = async (req, res) => {
         const {id} = req.params;
 
-        await knex('comments').where({id}).delete()
+        await deleteComment(id)
 
-        return res.status(200).json('success')
+        return this.ok(res, 'Comentário deletado com sucesso')
     }
-    async updateComment(req, res) {
+    update = async (req, res) => {
         const {id} = req.params;
         const {title, comment} = req.body;
 
-        await knex('comments').where({id}).update({
-            title,
-            comment,
-        })
-        return res.status(200).json('sucess')
+        await updateComment(id, title, comment)
+        return this.ok(res, 'Comentário atualizado com sucesso')
     }
 }
 
