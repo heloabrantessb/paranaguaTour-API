@@ -1,14 +1,21 @@
 const knex = require('../database/knex');
 const User = require("../models/User")
+const bcrypt = require('bcryptjs');
+const AppError = require('../utils/AppError');
 
 const createUser = async (name, email, password) => {
     const isAdmin = false
-    const user = await knex("users").insert({ name, email, password, isAdmin })
+    const hashedPassword = await bcrypt.hash(password, 8);
+
+    const userExists = await knex('users').where({email}).first();
+    if (userExists) throw new AppError('Usuário já cadastrado');
+
+    const user = await knex("users").insert({ name, email, password: hashedPassword, isAdmin })
     return {
-        id: User.id,
-        name: User.name,
-        email: User.email,
-        isAdmin: User.isAdmin
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        isAdmin: user.isAdmin
     }
 }
 
@@ -33,6 +40,7 @@ const updateUser = async (id, name, email, password) => {
     if (!user) {
         throw new AppError('Usuário não encontrado');
     }
+    
 
     if (email) user.email = email;
     if (name) user.name = name;

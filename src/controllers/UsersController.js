@@ -1,72 +1,79 @@
 const knex = require('../database/knex');
+const BaseController = require('./BaseController');
+const {createUser, listUsers, findUserById, findUserByEmail, updateUser, deleteUser} = require('../services/UserService');
 const bcrypt = require('bcryptjs');
-const AppError = require('../utils/AppError');
-const {createUser, listUsers, findUserById, findUserByEmail, deleteUser} = require('../services/UserService');
 
-class UsersController {
-    async create(req, res) {
-        const { name, email, password } = req.body;
+class UsersController extends BaseController{
+    create = async (req, res) => {
+        try {
+            const { name, email, password } = req.body;
+            if (!name ||!email ||!password) return this.badRequest(res, 'Preencha todos os campos');
+        
+            await createUser(name, email, password);
+            return this.created(res);
 
-        if (!name ||!email ||!password) {
-            return res.status(400).json({ error: 'Preencha todos os campos' });
+        }catch (error) {
+            return this.internalError(res, error.message)
         }
+    }
 
-        const userExists = await findUserByEmail(email);
-        if (userExists) {
-            throw new AppError('Usuário já cadastrado');
+    list = async (req, res) => {
+        try {
+            const users = await listUsers();
+            return this.ok(res, users);
+        }catch (error) {
+            return this.internalError(res, error.message)
         }
-
-        const hashedPassword = await bcrypt.hash(password, 8);
-
-        await createUser(name, email, hashedPassword);
-
-        return res.status(201).json('Usuário criado com sucesso');
     }
 
-    async list(req, res) {
-        const users = await listUsers();
-        return res.status(200).json(users);
+    findById = async (req, res) => {
+        try {
+            const {id} = req.params
+            const users = await findUserById(id)
+            return this.ok(res, users)
+        }catch (error) {
+            return this.internalError(res, error.message)
+        }
     }
 
-    async findById(req, res) {
-        const {id} = req.params
-        const users = await findUserById(id)
-        return res.status(200).json(users)
+    findByEmail = async (req, res) => {
+        try {
+            const {email} = req.params
+            const users = await findUserByEmail(email)
+            return this.ok(res, users)
+        }catch (error) {
+            return this.internalError(res, error.message)
+        }
     }
 
-    async findByEmail(req, res) {
-        const {email} = req.params
-        const users = await findUserByEmail(email)
-        return res.status(200).json(users)
+    delete = async (req, res) => {
+        try {
+            const { id } = req.params;
+            await deleteUser(id);
+
+            return this.ok(res, 'Usuário deletado com sucesso');
+        }catch (error) {
+            return this.internalError(res, error.message)
+        }
     }
 
-    async delete(req, res) {
-        const { id } = req.params;
-        await deleteUser(id);
+    update = async (req, res) => {
+        try {
+            const { name, email, password } = req.body;
+            const { id } = req.params;
 
-        return res.status(200).json('Ususário deletado com sucesso');
-    }
+            if (password) {
+                const hashedPassword = await bcrypt.hash(password, 8);
 
-    async update(req, res) {
-        const { name, email, password } = req.body;
-        const { id } = req.user;
+                await updateUser(id, name, email, hashedPassword)
 
-        if (email) {
-            const userExists = await findUserByEmail(email);
-            if (userExists) {
-                throw new AppError('Usuário já cadastrado');
+                return this.ok(res, 'Usuário atualizado com sucesso');
+            } else {
+                await updateUser(id, name, email)
+                return this.ok(res, 'Usuário atualizado com sucesso');
             }
-        }
-
-        if (password) {
-            const hashedPassword = await bcrypt.hash(password, 8);
-
-            await this.updateUser(id, name, email, hashedPassword)
-
-            return res.status(200).json('Usuário atualizado com sucesso');
-        } else {
-            await this.updateUser(id, name, email)
-            return res.status(200).json('Usuário atualizado com sucesso');
+        } catch (error) {
+            return this.internalError(res, error.message)
         }
     }
 }
