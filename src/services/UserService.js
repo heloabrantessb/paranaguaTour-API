@@ -1,5 +1,4 @@
 const knex = require('../database/knex');
-const User = require("../models/User")
 const bcrypt = require('bcryptjs');
 const AppError = require('../utils/AppError');
 
