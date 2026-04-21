@@ -1,3 +1,5 @@
+const knex = require('../database/knex');
+
 const createComment = async (point_id, title, comment, rating, user_id)=> {
     const comment = await knex('comments').insert({
         title,

@@ -1,3 +1,5 @@
+const knex = require('../database/knex');
+
 const createImage = async (link_image, points_id) => {
     const image = await knex('images').insert({
             link_image,

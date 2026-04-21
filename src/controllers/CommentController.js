@@ -2,7 +2,7 @@ const knex = require('../database/knex')
 const { createComment, listComments, getCommentsByPostId, deleteComment } = require('../services/CommentService')
 const updateRating = require('../utils/updateRating')
 
-class CommentsControllers {
+class CommentController {
     create = async (req, res) => {
     const {title, comment, rating} = req.body
     const {points_id} = req.params
@@ -46,4 +46,4 @@ class CommentsControllers {
     }
 }
 
-module.exports = CommentsControllers
+module.exports = CommentController

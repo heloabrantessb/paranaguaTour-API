@@ -2,7 +2,7 @@ const knex = require('../database/knex')
 const BaseController = require('./BaseController')
 const {createPoint, listPoints, findPointById, updatePoint, deletePoint} = require('../services/PointService')
 
-class PointsController extends BaseController{
+class PointController extends BaseController{
     create = async (req, res) => {
         try {
             const {name, description, location, category} = req.body
@@ -54,4 +54,4 @@ class PointsController extends BaseController{
         }   
     }
 }
-module.exports = PointsController
+module.exports = PointController

@@ -1,10 +1,10 @@
 const {Router} = require('express');
-const CommentsControllers = require('../controllers/CommentsControllers');
+const CommentController = require('../controllers/CommentController');
 const ensureAuthenticated = require('../middlewares/ensureAuthenticated');
 
-const commentsRoutes = Router()
+const commentRoutes = Router()
 
-const commentsControllers = new CommentsControllers()
+const commentsControllers = new CommentController()
 
 commentsRoutes.get('/', commentsControllers.listComments);
 commentsRoutes.get('/:id', commentsControllers.listCommentsById);
@@ -15,6 +15,6 @@ commentsRoutes.post('/:points_id', commentsControllers.create);
 commentsRoutes.delete('/:id', commentsControllers.deleteComment); // colocar verificaçao apenas para o usuario ou o adm
 commentsRoutes.put('/:id', commentsControllers.updateComment); // colocar verificaçao apenas para o usuario ou o adm
 
-module.exports = commentsRoutes
+module.exports = commentRoutes
 
 

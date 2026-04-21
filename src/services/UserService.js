@@ -39,7 +39,6 @@ const updateUser = async (id, name, email, password) => {
     if (!user) {
         throw new AppError('Usuário não encontrado');
     }
-    
 
     if (email) user.email = email;
     if (name) user.name = name;

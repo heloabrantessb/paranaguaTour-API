@@ -3,7 +3,7 @@ const BaseController = require('./BaseController');
 const {createUser, listUsers, findUserById, findUserByEmail, updateUser, deleteUser} = require('../services/UserService');
 const bcrypt = require('bcryptjs');
 
-class UsersController extends BaseController{
+class UserController extends BaseController{
     create = async (req, res) => {
         try {
             const { name, email, password } = req.body;
@@ -78,4 +78,4 @@ class UsersController extends BaseController{
     }
 }
 
-module.exports = UsersController;
+module.exports = UserController;

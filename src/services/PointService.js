@@ -1,3 +1,5 @@
+const knex = require('../database/knex');
+
 const createPoint = async (name, description, location, category) => {
     const point = await knex('points').insert({
         name,
